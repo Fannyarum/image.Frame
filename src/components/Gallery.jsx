@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 export default function Gallery() {
   const [images, setImages] = useState([]);
-  const accessKey = 'mO_KxKH804YhXXVuF1kGja1QBdk9XIEab0BIZvIm7Cw';
+  const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -11,7 +11,7 @@ export default function Gallery() {
         const data = await res.json();
         setImages(data);
       } catch (err) {
-        console.error('Gagal fetch dari Unsplash:', err);
+        console.error('gagal fetch dari Unsplash:', err);
       }
     };
 
@@ -23,8 +23,7 @@ export default function Gallery() {
       {images.map((img) => (
         <div
           key={img.id}
-          className="relative group overflow-hidden rounded-xl shadow-md"
-        >
+          className="relative group overflow-hidden rounded-xl shadow-md">
           <img
             src={img.urls.small}
             alt={img.alt_description}
@@ -32,7 +31,7 @@ export default function Gallery() {
           />
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white">
             <h3 className="font-bold">{img.user.name}</h3>
-            <p className="text-sm">{img.alt_description || 'Beautiful aesthetic photo'}</p>
+            <p className="text-sm">{img.alt_description || 'Photo from Unsplash y'}</p>
           </div>
         </div>
       ))}
