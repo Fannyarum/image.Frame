@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import { useTheme } from '../ThemeContext';  
 import { Sun, Moon, Camera, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';  
 
 export default function Navbar({ setCategory }) {
   const { theme, toggleTheme } = useTheme();  
   const [searchTerm, setSearchTerm] = useState('');
+  const location = useLocation();  
+  const navigate = useNavigate();  
+
+  // reset kategori
+  const handleHomeClick = () => {
+    setCategory('');  
+    navigate('/');    
+  };
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -13,41 +21,55 @@ export default function Navbar({ setCategory }) {
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    setCategory(searchTerm);
+    setCategory(searchTerm); 
+  };
+
+  const handleSearchClick = () => {
+    setCategory(searchTerm); 
   };
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      handleSearchSubmit(event);
+      handleSearchSubmit(event); 
     }
   };
 
   return (
-    <nav className={`flex justify-between items-center px-6 py-4 shadow-md ${theme === 'light' ? 'bg-white text-black' : 'bg-gray-800 text-white'}`}>
+    <nav className={`flex justify-between items-center px-6 py-4 shadow-md mb-4 ${theme === 'light' ? 'bg-white text-black' : 'bg-gray-800 text-white'}`}>
       <div className="flex items-center gap-2 text-xl font-bold">
         <Camera className="w-6 h-6" />
-        FunGallery
+        <Link to="/" className={`text-${theme === 'light' ? 'black' : 'white'}`}>FunGallery</Link>
       </div>
       <div className="flex items-center gap-6">
-        <Link to="/" className="text-lg font-semibold">Home</Link>
-        <Link to="/album" className="text-lg font-semibold">Album</Link>
+        <button
+          onClick={handleHomeClick}
+          className={`p-2 px-4 text-lg font-semibold rounded-full text-white ${theme === 'light' ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-500 hover:bg-gray-600'} shadow-md hover:shadow-lg transition duration-200`}>
+          Home
+        </button>
 
-        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            onKeyDown={handleKeyDown}
-            placeholder="Search images..."
-            className={`p-2 rounded-md border-2 focus:outline-none ${theme === 'light' ? 'border-black bg-white text-black focus:ring-2 focus:ring-gray-600' : 'border-gray-600 bg-gray-800 text-white focus:ring-2 focus:ring-gray-400'}`}
-          />
-          <button 
-            type="submit"
-            className="p-2 rounded-md bg-gray-500 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          >
-            <Search className="w-5 h-5 text-white" />
-          </button>
-        </form>
+        <Link
+          to="/album"
+          className={`p-2 px-4 text-lg font-semibold rounded-full text-white ${theme === 'light' ? 'bg-gray-400 hover:bg-gray-500' : 'bg-gray-600 hover:bg-gray-700'} transition duration-200`}>
+          Album
+        </Link>
+
+        {location.pathname === '/' && (
+          <form onSubmit={handleSearchSubmit} className="relative flex items-center gap-2">
+            <div className={`relative flex items-center border-4 rounded-full ${theme === 'light' ? 'border-gray-600' : 'border-gray-400'}`}>
+              <Search 
+                className="absolute left-3 w-5 h-5 text-gray-500 cursor-pointer" 
+                onClick={handleSearchClick} />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Search images..."
+                className={`p-2 pl-12 rounded-full focus:outline-none ${theme === 'light' ? 'bg-white text-black' : 'bg-gray-700 text-white'} focus:ring-2 focus:ring-gray-600`}/>
+            </div>
+          </form>
+        )}
+
         <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
           {theme === 'light' ? <Moon /> : <Sun />}
         </button>

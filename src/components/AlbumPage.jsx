@@ -18,7 +18,7 @@ export default function AlbumPage({ category }) {
       }
     };
 
-    fetchImages();
+    fetchImages(); //filter kategori
   }, [category]);
 
   return (
