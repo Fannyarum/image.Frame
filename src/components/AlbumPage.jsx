@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useTheme } from '../ThemeContext';  
+import { useTheme } from '../ThemeContext'; 
 
-export default function Gallery() {
+export default function AlbumPage({ category }) {
   const [images, setImages] = useState([]);
   const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const { theme } = useTheme(); 
@@ -9,7 +9,7 @@ export default function Gallery() {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const url = `https://api.unsplash.com/photos/random?count=28&client_id=${accessKey}`;
+        const url = `https://api.unsplash.com/photos/random?count=16&query=${category}&client_id=${accessKey}`;
         const res = await fetch(url);
         const data = await res.json();
         setImages(data);
@@ -19,7 +19,7 @@ export default function Gallery() {
     };
 
     fetchImages();
-  }, []);
+  }, [category]);
 
   return (
     <div className={`p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${theme === 'light' ? 'bg-white text-black' : 'bg-gray-900 text-white'}`}>
