@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '../ThemeContext';  
+import { useNavigate } from 'react-router-dom'; 
+import { Heart } from 'lucide-react';  
 
 export default function Gallery({ category }) {
   const [images, setImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
   const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const { theme } = useTheme(); 
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
         let url = `https://api.unsplash.com/photos/random?count=28&client_id=${accessKey}`;
         
-        // periksa kategori untuk search 
         if (category) {
           url = `https://api.unsplash.com/photos/random?count=16&query=${category}&client_id=${accessKey}`;
         }
@@ -25,12 +28,24 @@ export default function Gallery({ category }) {
     };
 
     fetchImages();
-  }, [category]); //filter search
+  }, [category]);
+
+  const openModal = (img) => {
+    setSelectedImage(img);
+  };
+
+  const closeModal = () => {
+    setSelectedImage(null);
+    navigate('/');  
+  };
 
   return (
     <div className={`p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${theme === 'light' ? 'bg-white text-black' : 'bg-gray-900 text-white'}`}>
       {images.map((img) => (
-        <div key={img.id} className="relative group overflow-hidden rounded-xl shadow-md">
+        <div 
+          key={img.id} 
+          className="relative group overflow-hidden rounded-xl shadow-md cursor-pointer"
+          onClick={() => openModal(img)} >
           <img
             src={img.urls.small}
             alt={img.alt_description}
@@ -41,6 +56,32 @@ export default function Gallery({ category }) {
           </div>
         </div>
       ))}
+
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" 
+          onClick={closeModal} >
+          <div 
+            className="bg-white p-8 rounded-lg max-w-3xl w-full" 
+            onClick={(e) => e.stopPropagation()} >
+            <div className="flex mb-4">
+              <img 
+                src={selectedImage.urls.regular} 
+                alt={selectedImage.alt_description} 
+                className="w-2/3 h-auto mr-4"/>
+              <div className="w-1/3">
+                <h3 className="text-2xl font-semibold">{selectedImage.alt_description || 'No title'}</h3>
+                <p className="mt-2 text-lg">{selectedImage.user.name}</p>
+                <p className="mt-2 text-gray-700">{selectedImage.description || 'No description available'}</p>
+                <div className="mt-4 flex items-center justify-center text-gray-500">
+                  <Heart className="w-6 h-6 text-red-500 mr-2" />
+                  <span className="text-xl">{selectedImage.likes} Likes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
